@@ -1,0 +1,120 @@
+The following steps are the rough guide to making a release. Please
+update it if you find something inaccurate/missing.
+
+NOTE by Boris: A lot of things *are* wrong in this guide.
+
+1. Update the release information in the following files:
+
+   projects/Win32/VC6/xerces-all/XercesLib/XercesLib.dsp 
+   projects/Win32/VC6/xerces-all/XercesLib/XercesLib.mak
+   projects/Win32/VC7.1/xerces-all/XercesLib/XercesLib.vcproj
+   projects/Win32/VC8/xerces-all/XercesLib/XercesLib.vcproj
+   scripts/packageBinaries.pl
+   src/xercesc/configure.in
+   src/xercesc/util/XercesVersion.hpp
+   src/xercesc/util/MsgLoaders/ICU/ICUMsgLoader.cpp
+   src/xercesc/util/MsgLoaders/ICU/resources/res-file-list-unix.txt
+   src/xercesc/util/MsgLoaders/ICU/resources/res-file-list-wins.txt
+   src/xercesc/util/MsgLoaders/ICU/resources/res-file-list.txt
+   version.incl
+   xerces-c.spec
+   doc/Doxyfile
+   doc/style/dtd/entities.ent
+
+2. Update the release documentation in the following files:
+
+   doc/migration.xml
+   doc/migration_archive.xml
+   credits.txt
+   web/doc/releases.xml
+   web/doc/releases_archive.xml
+   web/doc/feedback.xml
+
+3. Build and test the release on the platforms that binaries are being
+   produced for. The source packages should be named 
+   xerces-c-x.y.z.zip/tar.gz.
+   In order for rpm to work correctly the actual directory containing the
+   source that will be zipped/tarred up should be xerces-c-x.y.z.
+   The binary packages should be named 
+   xerces-c-x.y.z-{arch}-{os}-{compiler}.zip/tar.gz.
+
+4. Generate PGP/GNUPG signatures for dist binaries and source packages.
+   That is, add public key to the SVN KEYS file if necessary and make sure
+   public key is on a key server or two. You will also need to update the
+   KEYS file on the website:
+
+   scp KEYS username@minotaur.apache.org:/www/www.apache.org/dist/xml/xerces-c
+
+5. Upload the binaries and signatures to the dist section of the website,
+   from the directory containing the binaries:
+
+   scp * username@minotaur.apache.org:/www/www.apache.org/dist/xml/xerces-c/binaries
+
+6. Upload the source packages and signatures to the dist section of the 
+   website, from the directory containing the sources:
+    
+   scp * username@minotaur.apache.org:/www/www.apache.org/dist/xml/xerces-c/source
+
+7. Logon to minotaur.
+
+   ssh minotaur.apache.org
+
+8. Generate md5 signatures for dist binaries and sources on minotaur using:
+
+   md5 -r xerces-c_x_y_z.tar.gz > xerces-c_x_y_z.tar.gz.md5
+
+9. Make sure the packages have the correct permissions (chmod 664*).
+
+10. Remove the previous release source and binaries (double checked that
+    they are archived) in the source and binaries directories. Remove the
+    links in the /www/www.apache.org/dist/xml/xerces-c directory (*current*
+    that were pointing at the old sources in the source directory).
+
+11. Create the new links for the source (do for each file including asc
+    and md5):
+
+    ln -s ./source/xerces-c-src_x_y_z.zip xerces-c-current.zip
+
+12. Go to the archive, /www/archive.apache.org/dist/xml/xerces-c and create
+    a directory for the previous release (xerces-c-x.y.z). Move over the
+    contents of the source and binaries directories to this new directory.
+    Remove the *current* links.
+
+13. Update the archive.
+
+    cd /www/www.apache.org/dist/xml/xerces-c
+    cp -R * /www/archive.apache.org/dist/xml/xerces-c
+
+14. Verify that the downloads are available. Note that it can take up to 
+    24 hours to for the mirrors to be updated.
+
+15. Update the website by taking a binary package and extracting the 
+    doc/html directories. The web pages are stored in 
+    /www/xml.apache.org/xerces-c. You will also need to update the
+    documentation pdf in the pdf directory (which has both a pdf and
+    pdf.tar.gz). Recommend copying the new documentation over the
+    existing files. Be sure to change the permissions on the files
+    and directories:
+
+    find . -type f -exec chmod 664 {} ;
+    find . -type d -exec chmod 775 {} ;
+
+    If the binaries are for different platforms you may also need to 
+    update the download.html file to point to the new binaries.
+    Verify that the website is updated (may take a while to be 
+    refreshed on the real webserver).
+
+16. Send out an announcement e-mail to the c-dev@xerces.apache.org and 
+    c-users@xerces.apache.org mailing lists and cc the 
+     announcements@xml.apache.org and pmc@xerces.apache.org mailing lists.
+
+17. Update the list of versions in Jira for xerces-c.
+
+18. Tag the release in SVN (tags for releases usually have the form 
+    Xerces-C_x_y_z where x.y.z is the Xerces-C release number) by doing:
+
+    svn copy https://svn.apache.org/repos/asf/xerces/c https://svn.apache.org/repos/asf/xerces/c/tags/Xerces-C_x_y_z \ -m "Tagging the Xercesc x.y release"
+
+    For more information on tagging see 
+    http://svnbook.red-bean.com/nightly/en/svn.branchmerge.tags.html.
+
