@@ -12,17 +12,8 @@ doc/secadv.xml and the doc/html/secadv/ directory as part of the release.
     if the minor version increases, not just the patch version):
 
    configure.ac
-   version.incl
    xerces-c.spec
-   doc/Doxyfile
    doc/style/dtd/entities.ent
-   projects/Win32/VC7.1/xerces-all/XercesLib/XercesLib.vcproj
-   projects/Win32/VC8/xerces-all/XercesLib/XercesLib.vcproj
-   projects/Win32/VC9/xerces-all/XercesLib/XercesLib.vcproj
-   projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj
-   projects/Win32/VC11/xerces-all/XercesLib/XercesLib.vcxproj
-   projects/Win32/VC12/xerces-all/XercesLib/XercesLib.vcxproj
-   src/xercesc/util/XercesVersion.hpp
    src/xercesc/util/MsgLoaders/ICU/ICUMsgLoader.cpp
 
 2. Update the release documentation in (at least) the following files:
@@ -39,12 +30,20 @@ doc/secadv.xml and the doc/html/secadv/ directory as part of the release.
    should be explicitly, and only, that produced by the make dist command.
 
 4. Build the web site and API docs by running the following commands from within
-   the distribution (note that both Oracle's Java and doxygen must be installed):
+   the distribution (note that both Oracle's Java 6 and doxygen must be
+   installed):
 
-   $ cd tools
-   $ ./createdocs.sh
-   $ cd ../doc
-   $ doxygen
+   $ cmake .
+   $ make createdocs
+   $ make createapidocs
+
+   or
+
+   $ autoreconf -fvi
+   $ ./configure
+   $ cd doc
+   $ make createdocs
+   $ make createapidocs
 
    You should be able to open the web site from doc/html/index.html and verify
    the content.
